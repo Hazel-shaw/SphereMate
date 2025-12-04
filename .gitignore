@@ -21,3 +21,4 @@ logs/
 *.pth.tar
 .DS_Store
 /ResNet_project/data/fruits-360_100x100
+/ResNet_project/data
