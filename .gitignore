@@ -1,4 +1,22 @@
-__pycache__/
-.ipynb_checkpoints/
-anaconda_projects/
+# 虚拟环境
+venv/
 .venv/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 临时输出、数据
+cam_test_frames/
+outputs/
+logs/
+*.log
+
+# 大模型权重、检查点
+*.pt
+*.pth
+*.pth.tar
+.DS_Store
