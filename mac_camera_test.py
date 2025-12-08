@@ -7,7 +7,8 @@ MacBook Pro摄像头实时平面检测
 
 import cv2
 import numpy as np
-from plane_rcnn.inference.detector import PlaneDetector
+# 使用新的基础平面检测器
+from PLANE_DETECTION_BASIC import BasicPlaneDetector
 
 class MacCameraPlaneDetector:
     """MacBook Pro摄像头平面检测器"""
@@ -28,17 +29,18 @@ class MacCameraPlaneDetector:
         if model_config is None:
             model_config = {
                 'device': 'cpu',
-                'use_lightweight': False,  # 默认使用简化版模型
+                'use_lightweight': False,  # 默认使用PC版完整模型
+                'backbone_type': 'resnet50',  # 使用resnet50作为默认主干网络
                 'lightweight_config': {
                     'backbone_type': 'resnet18',
                     'fpn_type': 'lightweight',
-                    'input_size': (160, 160),
+                    'input_size': (640, 480),
                     'use_quantization': False
                 }
             }
         
-        # 初始化平面检测器
-        self.detector = PlaneDetector(**model_config)
+        # 初始化平面检测器 - 使用新的基础检测器
+        self.detector = BasicPlaneDetector(device=model_config.get('device', 'cpu'))
         
         # 初始化摄像头
         self.cap = None
@@ -81,11 +83,15 @@ class MacCameraPlaneDetector:
             
             frame_count += 1
             
+            # 确保帧有内容
+            if frame is None or frame.shape[0] == 0 or frame.shape[1] == 0:
+                continue
+            
             # 进行平面检测
             results = self.detector.detect(frame)
             
             # 可视化检测结果
-            vis_frame = self.detector.visualize_detections(frame, results)
+            vis_frame = self.detector.visualize(frame, results)
             
             # 添加FPS信息
             fps = f"FPS: {frame_count}"  # 简化的FPS计算
@@ -133,7 +139,7 @@ class MacCameraPlaneDetector:
         results = self.detector.detect(image)
         
         # 可视化检测结果
-        vis_image = self.detector.visualize_detections(image, results)
+        vis_image = self.detector.visualize(image, results)
         
         # 显示结果
         cv2.imshow("图像平面检测", vis_image)
